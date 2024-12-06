@@ -9,14 +9,10 @@ dependencies:
   provider: any
   q_common_utils:
     path: ../q_common_utils
-  q_cache_utils:
-    path: ../q_cache_utils
   q_media_player:
     path: ../q_media_player
-#  just_audio: any
-
-#  q_theme:
-#    path: ../q_theme
+  q_theme:
+    path: ../q_theme
 
   flutter:
     sdk: flutter

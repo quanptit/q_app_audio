@@ -33,7 +33,7 @@ mixin WigetUpdatePlayStateMixin<T extends StatefulWidget> on State<T> {
 
 class AppPlaySoundUntils {
   late QAudioPlayer audioPlayer;
-  WigetUpdatePlayStateMixin? audioWidget;
+  WeakReference<WigetUpdatePlayStateMixin>? audioWidgetRef;
 
   AppPlaySoundUntils() {
     audioPlayer = new QAudioPlayer();
@@ -42,47 +42,45 @@ class AppPlaySoundUntils {
 
   void dispose() {
     audioPlayer.dispose();
-    audioWidget = null;
+    audioWidgetRef = null;
   }
 
   void registerUI({required WigetUpdatePlayStateMixin audioWidget}) {
-    if (this.audioWidget != audioWidget) {
+    var oldAudioWidget = this.audioWidgetRef?.target;
+    if (oldAudioWidget!=null && oldAudioWidget != audioWidget) {
       try {
-        if (this.audioWidget != null) this.audioWidget?.requireUpdate(isPlaying: false, isLoading: false);
+        oldAudioWidget.requireUpdate(isPlaying: false, isLoading: false);
       } catch (err) {
         L.e("registerUI ERROR: $err");
       }
-      this.audioWidget = audioWidget;
     }
+    this.audioWidgetRef = WeakReference(audioWidget);
   }
 
-  void unregisterUI({required WigetUpdatePlayStateMixin audioWidget}) {
-    if (audioWidget == this.audioWidget) {
-      this.audioWidget = null;
-    }
-  }
+  // void unregisterUI({required WigetUpdatePlayStateMixin audioWidget}) {
+  //   if (audioWidget == this.audioWidget) {
+  //     this.audioWidget = null;
+  //   }
+  // }
 
   void onPlayerStateChanged(QPlayerState state) {
+    var audioWidget = this.audioWidgetRef?.target;
     if (audioWidget == null) return;
     // L.d('onPlayerStateChanged: $state');
     switch (state) {
       case QPlayerState.playing:
-        audioWidget?.requireUpdate(isLoading: false, isPlaying: true);
+        audioWidget.requireUpdate(isLoading: false, isPlaying: true);
         break;
       case QPlayerState.preparing:
-        audioWidget?.requireUpdate(isLoading: true, isPlaying: false);
+        audioWidget.requireUpdate(isLoading: true, isPlaying: false);
         break;
       default:
-        audioWidget?.isPlaying = false;
-        audioWidget?.requireUpdate(isLoading: false, isPlaying: false);
+        audioWidget.isPlaying = false;
+        audioWidget.requireUpdate(isLoading: false, isPlaying: false);
         break;
     }
   }
 
-  ///  AssetSource: link ko chứa assets  ở đầu
-  /// UrlSource
-  /// DeviceFileSource: access a file in the user's device, probably selected by a file picker
-  /// BytesSource (only some platforms): pass in the bytes of your audio directly (read it from anywhere).
   void playAudio({required QPlayerSource? source}) {
     if(source==null) return;
     audioPlayer.playWithSource(source);

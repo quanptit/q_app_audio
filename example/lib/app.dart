@@ -1,10 +1,8 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:common_utils/common_utils.dart';
-import 'package:common_utils/date_time_utils.dart';
-import 'package:common_utils/l.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:q_audio/q_audio.dart';
+import 'package:q_app_audio/q_audio.dart';
+import 'package:q_cache_utils/q_cache_manager.dart';
+import 'package:q_common_utils/l.dart';
 
 class App extends StatefulWidget {
   App({super.key});
@@ -13,31 +11,39 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-class _AppState extends State<App>  {
-  buttonTestPress() async {
-    debugPrint("============ buttonTestPress");
-    AudioPlayer player = AudioPlayer(playerId: "test");
-    L.d("start state: ${player.state}");
-    player.onPlayerStateChanged.listen((event) {
-      debugPrint("onPlayerStateChanged $event");
-    });
-    // player.onDurationChanged.listen((event) {
-    //   debugPrint("onDurationChanged ${event.inSeconds}");
-    // });
-    try {
-      var time1 = DateTime.now().millisecondsSinceEpoch;
-      await player.setSource(
-          UrlSource("https://file-examples.com/storage/fe352586866388d59a8918d/2017/11/file_example_MP3_700KB.mp3"));
-      L.d("Set source complete, time = ${DateTime.now().millisecondsSinceEpoch - time1}");
+class _AppState extends State<App> {
+  String url = "https://f002.backblazeb2.com/file/learnlanguage/data/resource/voca_image_quiz/-1007359445.mp3";
 
-      await player.resume();
-    } catch (err) {
-      L.e("player Error: $err");
-    }
+  // buttonTestPress() async {
+  //   debugPrint("============ buttonTestPress");
+  //   AudioPlayer player = AudioPlayer(playerId: "test");
+  //   L.d("start state: ${player.state}");
+  //   player.onPlayerStateChanged.listen((event) {
+  //     debugPrint("onPlayerStateChanged $event");
+  //   });
+  //   // player.onDurationChanged.listen((event) {
+  //   //   debugPrint("onDurationChanged ${event.inSeconds}");
+  //   // });
+  //   try {
+  //     var time1 = DateTime.now().millisecondsSinceEpoch;
+  //     await player.setSource(
+  //         UrlSource("https://file-examples.com/storage/fe352586866388d59a8918d/2017/11/file_example_MP3_700KB.mp3"));
+  //     L.d("Set source complete, time = ${DateTime.now().millisecondsSinceEpoch - time1}");
+  //
+  //     await player.resume();
+  //   } catch (err) {
+  //     L.e("player Error: $err");
+  //   }
+  //
+  //   await CommonUtils.delayed(milliseconds: 5000);
+  //   L.d('Release');
+  //   player.dispose();
+  // }
 
-    await CommonUtils.delayed(milliseconds: 5000);
-    L.d('Release');
-    player.dispose();
+  @override
+  void initState() {
+    super.initState();
+    QCacheManager.cache(CacheSettingObj(urlPlay: url));
   }
 
   @override
@@ -57,15 +63,16 @@ class _AppState extends State<App>  {
           alignment: Alignment.center,
           child: Column(
             children: [
-              ElevatedButton(
-                child: Text("TEST"),
-                onPressed: buttonTestPress,
-              ),
+              // ElevatedButton(
+              //   child: Text("TEST"),
+              //   onPressed: buttonTestPress,
+              // ),
+              //
+              BtnAudioPlay(audioSource: QPlayerSource(url: url)),
               BtnAudioPlay(
-                  audioSource: UrlSource("http://learnlanguage.xyz/data/resource/-1296041680.mp3")),
-              BtnAudioPlay(
-                  audioSource: UrlSource(
-                      "https://file-examples.com/storage/fe352586866388d59a8918d/2017/11/file_example_MP3_700KB.mp3")),
+                  audioSource: QPlayerSource(
+                      url:
+                          "https://f002.backblazeb2.com/file/learnlanguage/data/resource/voca_image_quiz/-1002592064.mp3")),
             ],
           ),
         ),
@@ -75,7 +82,7 @@ class _AppState extends State<App>  {
 }
 
 class BtnAudioPlay extends StatefulWidget {
-  final Source audioSource;
+  final QPlayerSource audioSource;
 
   const BtnAudioPlay({super.key, required this.audioSource});
 
@@ -90,8 +97,12 @@ class _BtnAudioPlayState extends State<BtnAudioPlay> with WigetUpdatePlayStateMi
     return InkWell(
       child:
           AudioIconWidget(showProgressWhenLoading: true, isLoading: isLoading ?? false, isPlaying: isPlaying ?? false),
-      onTap: () {
-        playAudio(appPlaySoundUntils: appPlaySoundUntils, source: widget.audioSource);
+      onTap: () async {
+        CacheSettingObj cacheSettingObj = CacheSettingObj(urlPlay: widget.audioSource.url!);
+        var cacheResult = await cacheSettingObj.getCacheResult();
+        playAudio(
+            appPlaySoundUntils: appPlaySoundUntils,
+            source: cacheResult.isCached ? QPlayerSource(filePath: cacheResult.filePathOrUrl) : widget.audioSource);
       },
     );
   }

@@ -42,7 +42,9 @@ dependencies:
     path: ../
   q_common_utils:
     path: ../../q_common_utils
-  provider: ^6.0.3
+  q_cache_utils:
+    path: ../../q_cache_utils
+  provider: any
 
 # dependency_overrides:
 #   audioplayers:

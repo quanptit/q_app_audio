@@ -25,7 +25,7 @@ class _SliderAudioState extends State<SliderAudio> {
     return Expanded(
       child: Slider(
         value: _isChangingFromUser ? _sliderValueFromUser: widget.sliderValue,
-        activeColor: T.textTheme(context).bodyText2?.color,
+        activeColor: T.textTheme(context).bodySmall?.color,
         inactiveColor: T.getTheme(context).disabledColor,
         onChangeStart: (value) {_isChangingFromUser = true;},
         onChanged: (value) {
