@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:q_app_audio/q_audio.dart';
 import 'package:q_cache_utils/q_cache_manager.dart';
-import 'package:q_common_utils/l.dart';
 
 class App extends StatefulWidget {
   App({super.key});
@@ -48,6 +47,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
+    List<String?> test = [];
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by

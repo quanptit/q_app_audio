@@ -1,6 +1,17 @@
 import 'package:example/app.dart';
 import 'package:flutter/material.dart';
+extension ListExtensions<E> on List<E> {
+  List<E> addSkipNull(E? element) {
+    if (element != null) add(element);
+    return this;
+  }
 
+  List<E> addAllReturn(List<E> items) {
+    addAll(items);
+
+    return this;
+  }
+}
 void main() {
   runApp(const MyApp());
 }
