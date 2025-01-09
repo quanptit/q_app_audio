@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:q_common_utils/l.dart';
+import 'package:q_common_utils/index.dart';
 import 'package:q_media_player/q_media_player.dart';
 
 /// Xem trong oneNode
@@ -46,7 +46,7 @@ class AppPlaySoundUntils {
   }
 
   void registerUI({required WigetUpdatePlayStateMixin audioWidget}) {
-    var oldAudioWidget = this.audioWidgetRef?.target;
+    var oldAudioWidget = audioWidgetRef?.target;
     if (oldAudioWidget!=null && oldAudioWidget != audioWidget) {
       try {
         oldAudioWidget.requireUpdate(isPlaying: false, isLoading: false);
@@ -54,7 +54,7 @@ class AppPlaySoundUntils {
         L.e("registerUI ERROR: $err");
       }
     }
-    this.audioWidgetRef = WeakReference(audioWidget);
+    audioWidgetRef = WeakReference(audioWidget);
   }
 
   // void unregisterUI({required WigetUpdatePlayStateMixin audioWidget}) {
@@ -64,7 +64,7 @@ class AppPlaySoundUntils {
   // }
 
   void onPlayerStateChanged(QPlayerState state) {
-    var audioWidget = this.audioWidgetRef?.target;
+    var audioWidget = audioWidgetRef?.target;
     if (audioWidget == null) return;
     // L.d('onPlayerStateChanged: $state');
     switch (state) {
