@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:q_theme/app_theme.dart';
 
 class SliderAudio extends StatefulWidget {
   const SliderAudio({Key? key, required this.sliderValue, required this.onSeekBarMoved}) : super(key: key);
@@ -22,11 +21,12 @@ class _SliderAudioState extends State<SliderAudio> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Expanded(
       child: Slider(
         value: _isChangingFromUser ? _sliderValueFromUser: widget.sliderValue,
-        activeColor: T.textTheme(context).bodySmall?.color,
-        inactiveColor: T.getTheme(context).disabledColor,
+        activeColor: theme.textTheme.bodySmall?.color,
+        inactiveColor: theme.disabledColor,
         onChangeStart: (value) {_isChangingFromUser = true;},
         onChanged: (value) {
           setState(() {

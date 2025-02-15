@@ -6,14 +6,18 @@ environment:
   sdk: ^3.5.4
 
 dependencies:
-  provider: any
   q_common_utils:
     path: ../q_common_utils
   q_media_player:
     path: ../q_media_player
   q_theme:
     path: ../q_theme
-
+  q_cache_utils:
+    path: ../q_cache_utils
+  flutter_riverpod: any  # Version 2.6.3 dang con van de voi build_runner. nen ko cap nhat len 2.6.3. Cho ban moi hon
+  riverpod_annotation: any
+  freezed_annotation: any
+  just_audio: any
   flutter:
     sdk: flutter
 
@@ -21,7 +25,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: any
-
+  freezed: any
+  riverpod_generator: any
+  json_serializable: any
+  build_runner: any
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

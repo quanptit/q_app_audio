@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 /// Cái icon audio, khi play sẽ chuyển trạng thái.
-class AudioIconWidget extends StatelessWidget {
+class VAudioIcon extends StatelessWidget {
   final bool isLoading, isPlaying;
   final IconData iconData;
   final Color colorPlaying, colorNormal;
   final double size;
   final bool showProgressWhenLoading;
 
-  const AudioIconWidget(
+  const VAudioIcon(
       {super.key,
       required this.isLoading,
       required this.isPlaying,

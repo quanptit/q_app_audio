@@ -6,8 +6,15 @@ import 'package:q_media_player/q_media_player.dart';
 /// Sử dụng để play một sound bất kỳ nào đó, sẽ stop cái đang play sử dụng class này, và play cái mới
 
 mixin WigetUpdatePlayStateMixin<T extends StatefulWidget> on State<T> {
-  bool? isPlaying;
-  bool? isLoading;
+  bool isPlaying = false;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isPlaying = false;
+    isLoading = false;
+  }
 
   playAudio({required AppPlaySoundUntils appPlaySoundUntils, required QPlayerSource source}) {
     _disposed = false;
@@ -16,6 +23,7 @@ mixin WigetUpdatePlayStateMixin<T extends StatefulWidget> on State<T> {
   }
 
   bool? _disposed;
+
   @override
   void dispose() {
     _disposed = true;
@@ -25,29 +33,45 @@ mixin WigetUpdatePlayStateMixin<T extends StatefulWidget> on State<T> {
   void requireUpdate({bool? isPlaying, bool? isLoading}) {
     if (_disposed == true) return;
     setState(() {
-      this.isPlaying = isPlaying;
-      this.isLoading = isLoading;
+      this.isPlaying = isPlaying ?? false;
+      this.isLoading = isLoading ?? false;
     });
   }
 }
 
-class AppPlaySoundUntils {
-  late QAudioPlayer audioPlayer;
-  WeakReference<WigetUpdatePlayStateMixin>? audioWidgetRef;
+// abstract class IPlayerStateChanged {
+//   void onPlayerStateChanged(QPlayerState state);
+// }
 
-  AppPlaySoundUntils() {
-    audioPlayer = new QAudioPlayer();
-    audioPlayer.onPlayerStateChanged = onPlayerStateChanged;
-  }
+class AppPlaySoundUntils {
+  QAudioPlayer? audioPlayer;
+  WeakReference<WigetUpdatePlayStateMixin>? audioWidgetRef;
+  // List<WeakReference<IPlayerStateChanged>> listRegisterEvent = [];
+
+  AppPlaySoundUntils();
 
   void dispose() {
-    audioPlayer.dispose();
     audioWidgetRef = null;
+    audioPlayer?.dispose();
   }
+
+  // void addListenner(IPlayerStateChanged listenner) {
+  //   try {
+  //     listRegisterEvent.firstWhere((element) => listenner == element.target);
+  //   } catch (e) {
+  //     listRegisterEvent.add(WeakReference(listenner));
+  //   }
+  // }
+  //
+  // void removeLitenner(IPlayerStateChanged listenner) {
+  //   listRegisterEvent.removeWhere((element) {
+  //     return element.target == null || element.target == listenner;
+  //   });
+  // }
 
   void registerUI({required WigetUpdatePlayStateMixin audioWidget}) {
     var oldAudioWidget = audioWidgetRef?.target;
-    if (oldAudioWidget!=null && oldAudioWidget != audioWidget) {
+    if (oldAudioWidget != null && oldAudioWidget != audioWidget) {
       try {
         oldAudioWidget.requireUpdate(isPlaying: false, isLoading: false);
       } catch (err) {
@@ -64,7 +88,7 @@ class AppPlaySoundUntils {
   // }
 
   void onPlayerStateChanged(QPlayerState state) {
-    var audioWidget = audioWidgetRef?.target;
+    final audioWidget = audioWidgetRef?.target;
     if (audioWidget == null) return;
     // L.d('onPlayerStateChanged: $state');
     switch (state) {
@@ -81,8 +105,29 @@ class AppPlaySoundUntils {
     }
   }
 
-  void playAudio({required QPlayerSource? source}) {
-    if(source==null) return;
-    audioPlayer.playWithSource(source);
+  _initPlayer() {
+    if (audioPlayer != null) {
+      _disposePlayer();
+    }
+    audioPlayer = QAudioPlayer();
+    audioPlayer!.onPlayerStateChanged = onPlayerStateChanged;
+  }
+
+  Future _disposePlayer() async {
+    audioPlayer?.onPlayerStateChanged = null;
+    audioPlayer?.dispose();
+    audioPlayer = null;
+  }
+
+  void playAudio({required QPlayerSource? source})  {
+    if (source == null) return;
+    // Same source => seek play again
+    if (audioPlayer?.currentSource?.toString() != null && audioPlayer?.currentSource?.toString() == source.toString()) {
+      audioPlayer?.playWithSource(source);
+    } else {
+      _disposePlayer();
+      _initPlayer();
+      audioPlayer?.playWithSource(source);
+    }
   }
 }
