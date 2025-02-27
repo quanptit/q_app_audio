@@ -36,6 +36,7 @@ class GameBgmusicUtils extends PlayLongMusicBase {
     _player = player;
     await player.setLoopMode(LoopMode.all);
     await player.setShuffleModeEnabled(true);
+    player.setVolume(volumeMusic);
     playlist = ConcatenatingAudioSource(
       // Start loading next item just before reaching it
       useLazyPreparation: true,
@@ -89,7 +90,9 @@ class GameBgmusicUtils extends PlayLongMusicBase {
     if (song.assetPath != null) {
       return AudioSource.asset(song.assetPath!);
     } else {
-      var cacheResult = await song.cacheSettingObj!.getCacheResult();
+      var cacheSettingObj = song.cacheSettingObj!;
+      var cacheResult = await cacheSettingObj.getCacheResult();
+      L.d("cacheResult: $cacheResult");
       if (cacheResult.isCached == true) {
         return AudioSource.file(cacheResult.filePathOrUrl);
       } else {

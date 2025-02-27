@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/**
+ * Khi kế thừa lớp này, thì audio sẽ tự động dừng/resume khi ứng dụng vào chế độ background.
+ * */
 abstract class PlayLongMusicBase with WidgetsBindingObserver {
   void initAppLifeObserver() {
     WidgetsBinding.instance.addObserver(this);
